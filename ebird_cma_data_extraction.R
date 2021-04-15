@@ -19,6 +19,7 @@ poly <- read_sf("lcma000b16a_e/lcma000b16a_e.shp") #2016 CMA and CA boundaries f
 poly<-subset(poly, CMATYPE=="B") # only CMAs
 
 f_out <- "ebd_CMA.txt"
+#ebd stored locally and not hosted in repo yet (~30gb, can upload in a release)
 auk_ebd("~/ebd_CA_relFeb-2021.txt") %>%
   # define filters
   auk_bbox(poly) %>%
@@ -57,4 +58,3 @@ legend("top",
        ncol = 2)
 
 saveRDS(ebd_in_poly, "ebd_in_poly.RDS")
-saveRDS(ebd_in_poly@data,'ebd_CMA_crop.csv')
