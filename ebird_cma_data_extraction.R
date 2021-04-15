@@ -18,10 +18,7 @@ setwd(here())
 poly <- read_sf("lcma000b16a_e/lcma000b16a_e.shp") #2016 CMA and CA boundaries from Canadian Census (Statistics Canada, Downloaded April 14)
 poly<-subset(poly, CMATYPE=="B") # only CMAs
 
-for (i in 1:nrow(poly)){
-  
-poly_sub<-poly[i,]
-f_out <- paste0("ebd_CMA_", i,".txt")
+f_out <- "ebd_CMA.txt"
 auk_ebd("~/ebd_CA_relFeb-2021.txt") %>%
   # define filters
   auk_bbox(poly) %>%
@@ -29,7 +26,7 @@ auk_ebd("~/ebd_CA_relFeb-2021.txt") %>%
   # compile and run filters
   auk_filter(f_out, overwrite=T)
 
-ebd <- read_ebd(paste0("ebd_CMA_", i,".txt"))
+ebd <- read_ebd("ebd_CMA.txt")
 
 
 # convert to sf object
@@ -46,6 +43,18 @@ in_poly <- st_within(ebd_sf, poly_ll, sparse = FALSE)
 # subset data frame
 ebd_in_poly <- ebd[in_poly[, 1], ]
 
-saveRDS(ebd_in_poly, paste0("ebd_in_poly_",i,".RDS"))
-saveRDS(ebd_in_poly@data,paste0("ebd_CMA_",i,"crop.csv"))
-}
+par(mar = c(0, 0, 0, 0))
+plot(poly %>% st_geometry(), col = "grey40", border = NA)
+plot(ebd_sf, col = "black", pch = 19, cex = 0.5, add = TRUE)
+plot(ebd_sf[in_poly[, 1], ], 
+     col = "forestgreen", pch = 19, cex = 0.5, 
+     add = TRUE)
+legend("top", 
+       legend = c("All observations", "After spatial subsetting"), 
+       col = c("grey40", "forestgreen"), 
+       pch = 19,
+       bty = "n",
+       ncol = 2)
+
+saveRDS(ebd_in_poly, "ebd_in_poly.RDS")
+saveRDS(ebd_in_poly@data,'ebd_CMA_crop.csv')
