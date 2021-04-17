@@ -21,7 +21,7 @@ completeness<-list()
 for (i in 1:nrow(poly))
 {
   cdb_sub<-subset(cdb, CMANAME==poly$CMANAME[i])
-   data_db<-read.csv(paste0("CMA_summary_", gsub("\\/.*", "",poly$CMANAME[i]),".csv"))
+  data_db<-read.csv(paste0("CMA_summary_", gsub("\\/.*", "",poly$CMANAME[i]),".csv"))
   data_db<-subset(data_db, n_checklists>=17)
   completeness[[i]]<-data_db%>%group_by(year)%>%summarise_at('DBUID', n_distinct)
   completeness[[i]]$percent<-completeness[[i]]$DBUID/length(unique(cdb_sub$DBUID))
