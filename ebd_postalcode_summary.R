@@ -36,7 +36,7 @@ data<-subset(data, year>=2007)
 
 data_sum<-data%>%group_by(DBUID, year)%>%summarise_at(c('checklist_id', 'scientific_name'),n_distinct)
 colnames(data_sum)[3:4]<-c("n_checklists", "species_richness")
-write.csv(as.data.frame(data_sum)[,1:4], paste0("CMA_summary_", poly$CMANAME[i],".csv"), row.names=F)
+write.csv(as.data.frame(data_sum)[,1:4], paste0("CMA_summary_", gsub("\\/.*", "",poly$CMANAME[i]),".csv"), row.names=F)
 }
 
 
