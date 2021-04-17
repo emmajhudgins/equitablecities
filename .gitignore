@@ -35,3 +35,12 @@ vignettes/*.pdf
 # Shiny token, see https://shiny.rstudio.com/articles/shinyapps.html
 rsconnect/
 .DS_Store
+
+# big EBD files
+/EBD/
+ebd_CMA*
+ebd_in_poly*
+cdb_CMA_*
+
+#large census files
+ldb*

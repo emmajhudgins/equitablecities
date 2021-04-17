@@ -21,7 +21,7 @@ poly<-subset(poly, CMATYPE=="B") # only CMAs
 for (i in 1:nrow(poly)){
   
 poly_sub<-poly[i,]
-f_out <- paste0("ebd_CMA_", i,".txt")
+f_out <- paste0("EBD/ebd_CMA_", i,".txt")
 auk_ebd("~/ebd_CA_relFeb-2021.txt") %>%
   # define filters
   auk_bbox(poly_sub) %>%
@@ -29,7 +29,7 @@ auk_ebd("~/ebd_CA_relFeb-2021.txt") %>%
   # compile and run filters
   auk_filter(f_out, overwrite=T)
 
-ebd <- read_ebd(paste0("ebd_CMA_", i,".txt"))
+ebd <- read_ebd(paste0("EBD/ebd_CMA_", i,".txt"))
 
 
 # convert to sf object
