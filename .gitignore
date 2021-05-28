@@ -45,5 +45,5 @@ cdb_CMA_*
 raw/*
 
 #large outputs
-output/cdb_pccf_bird.RDS
-output/cdb_pccf.RDS
+/output/cdb_pccf_bird.RDS
+/output/cdb_pccf.RDS
