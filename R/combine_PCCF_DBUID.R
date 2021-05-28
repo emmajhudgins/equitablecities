@@ -15,12 +15,13 @@ setwd(here())
 poly <- readOGR("../raw/lcma000b16a_e/lcma000b16a_e.shp") #2016 CMA and CA boundaries from Canadian Census (Statistics Canada, Downloaded April 14)
 poly<-subset(poly, CMATYPE=="B") # only CMAs
 
+#trying out postal polygon file
 postal<-readOGR("../raw/DMTI_2006_CanMapPS_LDU_ALL_PROV/MB/MBldu.shp")
 
 pdf('../plots/postal.pdf')
 ggplot(data=postal)+
-  geom_polygon(data = postal, aes(x=long, y=lat, group=group),size = 0.5, colour="black", fill=NA)+
-  geom_polygon(data=poly, aes(x=long, y=lat, group=group),size = 0.5, colour="black", fill=alpha('pink',0.5))
+  geom_polygon(data=poly, aes(x=long, y=lat, group=group),size = 0.5, colour="black", fill=alpha('pink',0.5))+
+  geom_polygon(data = postal, aes(x=long, y=lat, group=group),size = 0.5, colour="black", fill=alpha("blue", 0.5))
 dev.off()
 
 cdb<- read_sf('../raw/ldb_000b16a_e/ldb_000b16a_e.shp') #census dissemination block (smallest unit)
