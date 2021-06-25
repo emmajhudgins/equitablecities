@@ -19,15 +19,15 @@ postal<- read_sf('../data/LDU_fixed.shp') #postal code polygons clipped in QGIS 
 
 postal<- st_transform(postal, crs(poly))
 postal<-st_make_valid(postal)
-for (i in 1:nrow(poly))
+for (i in 2:nrow(poly))
 {
-  postal_CMA<-st_filter(postal, poly[1,])
+  postal_CMA<-st_filter(postal, poly[i,])
   data<-readRDS(paste0('../data/ebd_in_poly_',i,'.RDS'))
   data<- data %>% 
     st_as_sf( coords = c("longitude", "latitude"), crs = 4326)
   data<- st_transform(data, crs(poly))
   data<-data%>%st_join(postal_CMA)
-  saveRDS(data, file=paste0('../data/postal_CMA_', poly$CMANAME[i], '.RDS'))
+  saveRDS(data, file=paste0('../data/postal_CMA_', gsub("\\/.*", "",poly$CMANAME[i]), '.RDS'))
   
   data$year<-gsub("-.*", "",data$observation_date)
   data<-subset(data, year>=2007)
