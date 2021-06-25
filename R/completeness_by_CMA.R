@@ -13,7 +13,6 @@ setwd(here())
 poly <- read_sf("../raw/lcma000b16a_e/lcma000b16a_e.shp") #2016 CMA and CA boundaries from Canadian Census (Statistics Canada, Downloaded April 14)
 poly<-subset(poly, CMATYPE=="B") # only CMAs
 write_sf(poly, '../data/CMA_shp.shp')
-write.csv(poly, file="../data/CMA_dat.csv", row.names=F)
 cdb<- read_sf('../raw/db_000b16a_e/ldb_000b16a_e.shp') #census dissemination block (smallest unit)
 cdb<-subset(cdb, CMATYPE=="B") #census dissemination block (smallest 
 

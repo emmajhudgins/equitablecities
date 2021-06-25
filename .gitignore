@@ -37,9 +37,9 @@ rsconnect/
 .DS_Store
 
 # big EBD files
-ebd_CMA*
-ebd_in_poly*
-cdb_CMA_*
+/data/ebd_CMA*
+/data/ebd_in_poly*
+/data/cdb_CMA_*
 
 #large census files
 raw/*
@@ -47,3 +47,9 @@ raw/*
 #large outputs
 /output/cdb_pccf_bird.RDS
 /output/cdb_pccf.RDS
+R/.RDataTmp
+
+/data/LDU_fixed.*
+/data/postal_CMA_*
+/data/CMA_typeB.*
+/data/CMA_postalcodeboundaries_LDU.*

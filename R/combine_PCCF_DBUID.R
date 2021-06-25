@@ -9,23 +9,16 @@ require(here)
 require(rgdal)
 require(rgeos)
 require(ggplot2)
+require(sp)
 
 setwd(here())
 
 poly <- readOGR("../raw/lcma000b16a_e/lcma000b16a_e.shp") #2016 CMA and CA boundaries from Canadian Census (Statistics Canada, Downloaded April 14)
 poly<-subset(poly, CMATYPE=="B") # only CMAs
-
 #trying out postal polygon file
-postal<-readOGR("../raw/DMTI_2006_CanMapPS_LDU_ALL_PROV/MB/MBldu.shp")
-
-pdf('../plots/postal.pdf')
-ggplot(data=postal)+
-  geom_polygon(data=poly, aes(x=long, y=lat, group=group),size = 0.5, colour="black", fill=alpha('pink',0.5))+
-  geom_polygon(data = postal, aes(x=long, y=lat, group=group),size = 0.5, colour="black", fill=alpha("blue", 0.5))
-dev.off()
 
 cdb<- read_sf('../raw/ldb_000b16a_e/ldb_000b16a_e.shp') #census dissemination block (smallest unit)
-cdb<-subset(cdb, CMATYPE=="B") #census dissemination block (smallest 
+cdb<-subset(cdb, CMATYPE=="B") #only CMAs
 
 pccf<-read.csv('../raw/pccf_feb2021_national.csv') # large file (postal code conversion file from StatCan)
 pccf$DBUID<-as.character(paste0(pccf$DAuid, sprintf("%03d",pccf$DisBlock)))
@@ -34,23 +27,22 @@ cdb_pccf<-cdb_pccf %>%
   mutate(N = 1) # qualifying factor 
 cdb_pccf<-cdb_pccf%>%
   group_by(DBUID) %>%
-  mutate(N = N / n()) # number of species qualified per origin/destination
+  mutate(N = N / n()) # number of DBUIDs in each postal code
 
 saveRDS(cdb_pccf,'../output/cdb_pccf.RDS')
 
 marg<-read.csv('../raw/cmg_a_2021-05-11_18-54-04_annual/cmg_a_06.csv')#marginalization indices from CANUE downloaded May 11th,2021
 colnames(marg)[1]<-"PC"
-files<-list.files()
+files<-list.files('../data/')
 files<-files[grepl("CMA_summary_",files)]
 all_birddiv<-tibble(DBUID=numeric(), year=numeric(), n_checklists=numeric(), species_richness=numeric())
 for (file in files)
 {
-  dat<-read.csv(file)
+  dat<-read.csv(paste0('../data/',file))
   all_birddiv<-add_row(dat, all_birddiv)
 }
 
 cdb_pccf$DBUID<-as.numeric(cdb_pccf$DBUID)
-
 cdb_pccf_bird<-cdb_pccf%>%left_join(all_birddiv, "DBUID")
 cdb_pccf_bird_marg<-cdb_pccf_bird%>%left_join(marg, "PC")
 saveRDS(cdb_pccf_bird_marg, file="../output/cdb_pccf_bird.RDS")
