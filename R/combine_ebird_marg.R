@@ -14,21 +14,22 @@ require(sp)
 setwd(here())
 
 marg<-read.csv('../raw/cmg_a_2021-05-11_18-54-04_annual/cmg_a_06.csv')#marginalization indices from CANUE downloaded May 11th,2021
-colnames(marg)[1]<-"POSTALCODE"
+colnames(marg)[8]<-"DAUID" #this column is given as the dissemination area ID by https://canue.ca/wp-content/uploads/2018/11/CANUE-Metadata-Canadian-Marginalization-Index.pdf
+marg$DAUID<-as.numeric(marg$DAUID)
 poly <- readOGR("../raw/lcma000b16a_e/lcma000b16a_e.shp") #2016 CMA and CA boundaries from Canadian Census (Statistics Canada, Downloaded April 14)
 poly<-subset(poly, CMATYPE=="B") # only CMAs
 
 
 files<-list.files('../data/')
-files<-files[grepl("CMA_summary_",files)]
-all_birddiv<-tibble(POSTALCODE=character(), year=numeric(), n_checklists=numeric(), species_richness=numeric())
+files<-files[grepl("CMA_DA_summary_",files)]
+all_birddiv<-tibble(DAUID=numeric(), year=numeric(), n_checklists=numeric(), species_richness=numeric())
 for (file in files)
 {
   dat<-read.csv(paste0('../data/',file))
   all_birddiv<-add_row(dat, all_birddiv)
 }
 
-marg_bird<-all_birddiv%>%left_join(marg, "POSTALCODE")
+marg_bird<-all_birddiv%>%left_join(marg, "DAUID")
 saveRDS(marg_bird, file="../output/marg_bird.RDS")
 
 
@@ -37,10 +38,15 @@ df$cmg06_10[which(df$cmg06_10==-9999)]<-NA
 df$cmg06_11[which(df$cmg06_11==-9999)]<-NA
 df$cmg06_12[which(df$cmg06_12==-9999)]<-NA
 df$cmg06_13[which(df$cmg06_13==-9999)]<-NA
-
-
+df<-df[complete.cases(df),]
+df<-st_as_sf(df, coords = c('longitude','latitude'))
+poly_sf<-st_as_sf(poly, crs=4326)
+poly_sf<-st_transform(poly_sf,'+proj=longlat +datum=WGS84 +no_defs' )
+st_crs(df)<-'+proj=longlat +datum=WGS84 +no_defs' 
+poly_sf<-st_make_valid(poly_sf)
+df<-df%>%st_join(poly_sf)
 library(mgcv)
-m<-gam(log(df$species_richness+1)~cmg06_10+cmg06_11+cmg06_12+cmg06_13+s(year), data=df)#instability, deprivation, dependency, ethnic concentration
+m<-gam(log(df$species_richness+1)~cmg06_10+cmg06_11+cmg06_12+cmg06_13+s(year)+df$CMANAME, data=df)#instability, deprivation, dependency, ethnic concentration
 summary(m)
 library(viridis)
 pal<-viridis
@@ -54,7 +60,7 @@ crs(provinces)<-"+proj=longlat +datum=WGS84"
 # crs(e)<- "+proj=lcc +lat_0=63.390675 +lon_0=-91.8666666666667 +lat_1=49 +lat_2=77 +x_0=6200000 +y_0=3000000 +datum=NAD83 +units=m +no_defs"
 poly<-spTransform(poly,CRS("+proj=longlat +datum=WGS84"))
 #provinces<-crop(provinces, e)
-df_postal<-df%>%group_by(POSTALCODE)%>%summarize_if(is.numeric, mean, na.rm=T)
+df_postal<-df%>%group_by(DAUID)%>%summarize_if(is.numeric, mean, na.rm=T)
 df_postal<-subset(df_postal, is.nan(latitude)==F)
 coordinates(df_postal)<-~longitude+latitude
 crs(df_postal)<-"+proj=longlat +datum=WGS84"

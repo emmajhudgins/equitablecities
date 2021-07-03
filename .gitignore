@@ -40,8 +40,8 @@ rsconnect/
 /data/ebd_CMA*
 /data/ebd_in_poly*
 /data/cdb_CMA_*
+/data/db_CMA*
 /data/CMA.*
-
 #large census files
 raw/*
 
