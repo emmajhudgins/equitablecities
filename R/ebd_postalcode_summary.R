@@ -36,4 +36,4 @@ for (i in 2:nrow(poly))
   colnames(data_sum)[3:4]<-c("n_checklists", "species_richness")
   write.csv(as.data.frame(data_sum)[,1:4], paste0("../data/CMA_summary_", gsub("\\/.*", "",poly$CMANAME[i]),".csv"), row.names=F)
 }
-
+##remove checklists <5min and >5km?
